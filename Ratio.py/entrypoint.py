@@ -10,6 +10,7 @@ class MyHandler(FileSystemEventHandler):
         time.sleep(1)
         tab = event.src_path.split('.')
         path = '.'.join(tab[:tab.index("torrent") + 1])
+        print(path)
         if not event.is_directory and os.path.isfile(path):
             configuration = {
                 "upload" : rand.randint(100000,999999),
