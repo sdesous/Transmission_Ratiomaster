@@ -102,14 +102,14 @@ class process_torrent():
             uploaded = uploaded // 2
 
         # get download
-        downloaded = 0
+        # downloaded = 0
 
-        tc = self.torrentclient
-        headers = tc.get_headers()
-        params = tc.get_query(uploaded=uploaded,
-                              downloaded=downloaded,
-                              event='stopped')
-        content = self.send_request(params, headers)
-        self.tracker_response_parser(content)
+        # tc = self.torrentclient
+        # headers = tc.get_headers()
+        # params = tc.get_query(uploaded=uploaded,
+        #                       downloaded=downloaded,
+        #                       event='stopped')
+        # content = self.send_request(params, headers)
+        # self.tracker_response_parser(content)
         print("[+] ",self.info["name"]," Done")
         # self.wait()
