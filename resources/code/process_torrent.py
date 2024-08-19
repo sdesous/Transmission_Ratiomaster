@@ -32,7 +32,6 @@ class process_torrent():
             self.info['length'] = 0
             for file in self.info['files']:
                 self.info['length'] += file['length']
-            # print(pretty_data(self.info['files']))
 
     def tracker_info_hash(self):
         raw_info = self.b_enc.get_dict('info')
@@ -44,7 +43,6 @@ class process_torrent():
 
     def send_request(self, params, headers):
         url = self.metainfo['announce']
-        # print(pretty_GET(url, headers, params))
         while True:
             try:
                 r = requests.get(url, params=params, headers=headers)
@@ -55,21 +53,17 @@ class process_torrent():
         return r.content
 
     def tracker_start_request(self):
-        tc = self.torrentclient
-        headers = tc.get_headers()
-        params = tc.get_query(uploaded=0,
+        headers = self.torrentclient.get_headers()
+        params = self.torrentclient.get_query(uploaded=0,
                               downloaded=0,
                               event='started')
 
-        # print('----------- First Command to Tracker --------')
         content = self.send_request(params, headers)
         self.tracker_response_parser(content)
 
     def tracker_response_parser(self, tr_response):
         b_enc = bencoding()
         response = b_enc.bdecode(tr_response)
-        # print('----------- Received Tracker Response --------')
-        # print(pretty_data(response))
         raw_peers = b_enc.get_dict('peers')
         i = 0
         peers = []
@@ -83,30 +77,18 @@ class process_torrent():
             peers.append((ip, port))
         self.interval = response['interval']
 
-    def wait(self):
-        pbar = tqdm(total=self.interval)
-        print('sleep: {}'.format(self.interval))
-        t = 0
-        while t < self.interval:
-            t += 1
-            pbar.update(1)
-            sleep(1)
-        pbar.close()
-
     def tracker_process(self):
         self.tracker_start_request()
 
-        # print('----------- Sending Command to Tracker --------')
+        # Octet
         uploaded = int(self.info['length'])
 
-        downloaded = 0
-
-        tc = self.torrentclient
-        headers = tc.get_headers()
-        params = tc.get_query(uploaded=uploaded,
-                              downloaded=downloaded,
+        headers = self.torrentclient.get_headers()
+        params = self.torrentclient.get_query(uploaded=uploaded,
+                              downloaded=0,
                               event='stopped')
+
         content = self.send_request(params, headers)
         self.tracker_response_parser(content)
+
         print("[+] ",self.info["name"]," Done")
-        # self.wait()

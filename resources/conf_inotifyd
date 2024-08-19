@@ -1,0 +1,2 @@
+INOTIFYD_ARGS="/app/script.sh /config/torrents:y"
+INOTIFYD_USER=root
